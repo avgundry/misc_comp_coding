@@ -4,26 +4,54 @@ from typing import List
 class Solution:
     def jump(self, nums: List[int]) -> int:
         """
+        O(n) time solution; 
+        optimization of DP approach
+        """
+
+        # in the DP approach we end up looking for the best number to jump
+        # to many times (i.e. nums[i] time for each ith number).
+        # instead we can work *forwards*, and keep track of the maximum
+        # reachable space in 2 jumps from the current number
+        n = len(nums)
+        i = 0
+        farthest = 0
+        prev_pos = 0
+        jumps = 0
+
+        while (prev_pos < n - 1):
+            # if we can jump farther from this number than all previous
+            # numbers, then update it.
+            farthest = max(farthest, i + nums[i])
+            if i == prev_pos:
+                # we've iterated to the end of all numbers reachable
+                # by our previous farthest step
+                # jump to the best position we've found so far.
+                prev_pos = farthest
+                jumps += 1
+            i += 1
+
+        return jumps
+
+        """
         Bottom-up DP approach
         """
-        dp = [float('inf')] * len(nums)
-        return self.recurseJump(nums, 0, dp)
+    #     dp = [float('inf')] * len(nums)
+    #     return self.recurseJump(nums, 0, dp)
 
-    def recurseJump(self, nums, ind, dp):
-        # break down into solving for min jumps from nums[i] to end.
-        # to do so, work backwards to build dp
-        dp[-1] = 0
-        for i in range(len(nums) - 2, -1, -1):
-            # hmmm..is this the right way to do it?
-            mins = [dp[x] for x in range(i, min(i + nums[i], len(nums)))]
-            if mins:
-                dp[i] = min(mins) + 1
-            else:
-                dp[i] = float('inf')
-        print(dp)
-        print(nums)
+    # def recurseJump(self, nums, ind, dp):
+    #     # break down into solving for min jumps from nums[i] to end.
+    #     # to do so, work backwards to build dp
+    #     dp[-1] = 0
+    #     # for each of n numbers
+    #     # must search through up to n numbers to build
+    #     # so O(n^2) time. 
+    #     for i in range(len(nums) - 2, -1, -1):
+    #         min_num = float('inf')
+    #         for j in range(i + 1, min(i + nums[i] + 1, len(nums))): 
+    #             min_num = min(min_num, dp[j])
+    #         dp[i] = min_num + 1
 
-        return dp[ind]
+    #     return dp[ind]
 
 
     """
